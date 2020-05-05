@@ -1,4 +1,4 @@
-alert("Está funcionando");
+//alert("Está funcionando");
 
 /**DEFINIÇÃO SOBRE MVC?
  * 
