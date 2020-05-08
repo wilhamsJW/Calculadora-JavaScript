@@ -48,23 +48,23 @@
 class CalcController{
     constructor() {
 
-        this._operation = [];
-        this._locale = 'pt-BR';//atributo criado do idioma
-        this._displayCalcEl = document.querySelector("#display");//este El no final é apenas uma conveção pra mostrar q é um elemento html
+        this._operation = [];                                          //operation está sendo utilizado como um atributo vazio em que estou usando de várias formas diferentes
+        this._locale = 'pt-BR';                                       //atributo criado do idioma
+        this._displayCalcEl = document.querySelector("#display");    //este El no final é apenas uma conveção pra mostrar q é um elemento html
         this._dateEl = document.querySelector("#data");
         this._timeEl = document.querySelector("#hora");
-        //this._displayCalc = "0"; //this funciona como uma variável porém não é uma var, é um atributo 
-        //displayCalc vai ser o display dos números onde o usuário digita, é id do html
+                                                                  //this._displayCalc = "0"; //this funciona como uma variável porém não é uma var, é um atributo 
+                                                                 //displayCalc vai ser o display dos números onde o usuário digita, é id do html
         this._currentDate;
-        //este _ (underline) nos atributos quer dizer que ele é privado.(leia a nota acima explicando sobre private)
-        this.initialize(); //todos os métodos devem estar dentro do constructos pq o constructor chama eles automaticamente
+                                                               //este _ (underline) nos atributos quer dizer que ele é privado.(leia a nota acima explicando sobre private)
+        this.initialize();                                    //todos os métodos devem estar dentro do constructos pq o constructor chama eles automaticamente
         this.initButtonsEvents();
     }
 
     initialize(){
 
-        this.setDisplayDateTime();//colocando a função aqui antes  de chamar o setInterval faz com que o display seja
-        //mostrado no mesmo segundo para o usuário, sem essa função aqui o código demora um pouquinho pra mostrar o display
+        this.setDisplayDateTime();    //colocando a função aqui antes  de chamar o setInterval faz com que o display seja
+                                     //mostrado no mesmo segundo para o usuário, sem essa função aqui o código demora um pouquinho pra mostrar o display
 
         setInterval(()=>{
           this.setDisplayDateTime();
@@ -105,9 +105,9 @@ class CalcController{
                                                            //este método está sendo usado no addOperation 
     }
 
-
-
-
+    setLastOperation(value) {
+        this._operation[this._operation.length - 1] = value; //este método está substituindo o último valor pelo valor atual
+    }
 
 
 
@@ -123,7 +123,7 @@ class CalcController{
 
 
     addOperation(value) {               //método criado para add operações, o método push ele add 
-    console.log('A', isNaN(this.getLastOperation())); //uma informação dentro da array gerada, se a array tem 3 itens 
+    console.log('A', value, isNaN(this.getLastOperation())); //uma informação dentro da array gerada, se a array tem 3 itens 
                                       //ele add mais um item pra ficar com 4 
                                      //isNaN = é como q fosse uma pergunta negativa, tipo: NÂO é um número? se não for um número ele retorna verdadeiro 
                                     //ex.: a lera Z,  NÂO é um número? resposta = verdadeiro ou true, pq Z não é um número
@@ -132,24 +132,37 @@ class CalcController{
         if (isNaN(this.getLastOperation())) {          //o parãmetro de if vai receber o penúltimo número e ver do q se trata,
                                                       //se for um número vai cair no else  
 
-          if(this.isOperator(value)) {
+          if (this.isOperator(value)) {
 
-            this._operation[this._operation.length-1] = value;  //com este cógigo consigo substituir o último valor pego, pq ele está sendo igual a value e value tem o ultimo valor digitado pelo usuário, ou seja ele irá apenas trocar 
-                                                               //os valores quando o usuário digitar outra coisa                     
+            this.setLastOperation(value);                                      //com este cógigo consigo substituir o último valor pego, pq ele está sendo igual a value e value tem o ultimo valor digitado pelo usuário, ou seja ele irá apenas trocar 
+                                                                              //os valores quando o usuário digitar outra coisa                     
+          } else if(isNaN(value)) {                                          //pq esse -1? Imagine que o usuário digitou um sinal %, então esse sinal % está sendo tratado dentro do if  
+            console.log(value);                                             //ele deixa de ser o valor atual pra ser tratado, ok? ok, então o sinal % entra aqui this._operation[this._operation.length-1]   
+                                                                           //se o usuário digitar um +, o + será o valor atual e será o último sinal, então quando digo -1 = value, estou falando q o % agora será +, isso só serve para os sinais, não pode haver repetição de sinais,ou é mais ou é menos
+                                                                        
           } else {
-            console.log(value);
-          }               
-                                                      
+              this._operation.push(value);                              //este se não está apenas mandando adicionar o operador encontrado em isOperator
+          }                                                          
+             
+          
+
+
         } else {
 
+            if(this.isOperator(value)) {
+
+                this._operation.push(value);
+
+            } else {
+
+            }
+
            let newValue = this.getLastOperation().toString() + value.toString();        //toString é pra transformar o número em uma string, para que a calculadora         
-           this._operation.push(newValue); //explicaçoes do push um pouquinho acima    //posso concatenar um com outro. ex.: o usuário digita 2 e depois 5, a calculdora terá q formar   
+           this.setLastOperation(parseInt(newValue));                                  //posso concatenar um com outro. ex.: o usuário digita 2 e depois 5, a calculdora terá q formar   
         }                                                                             //25 e não somar 2 + 5, pra isso acontecer os números tem que ser strings ou textos   
-                                                                                     //note que no parãmetro do addOperation existe um value e esse mesmo value vai ser concatenado com o  let newValue = this.getLastOperation().toString()    
+                                                                                     //note que no parãmetro do addOperation existe um value e esse mesmo value vai ser concatenado com o  let newValue = this.getLastOperation().toString() 
+           console.log(this._operation);                                                                             
     }
-
-
-
 
 
     setError() {
@@ -216,26 +229,34 @@ class CalcController{
 
 
     initButtonsEvents() {
-       let buttons = document.querySelectorAll("#buttons > g, #parts > g") //buttons > g = pegue todos os elementos filhos de button
-        
-       buttons.forEach( (btn, index) => {
 
-            this.addEventListenerAll(btn, "click drag", e => {
+        let buttons = document.querySelectorAll("#buttons > g, #parts > g"); //#buttons > g = quer dizer pra pegar todos os elementos filhos de buttons
 
-             let textbtn =   btn.className.baseVal.replace('btn-', '');
+        buttons.forEach((btn, index) => {
 
-             console.log(textbtn);
+            this.addEventListenerAll(btn, 'click drag', e => {
 
-               });
-               this.addEventListenerAll(btn, "mouseover mouseup mousedow", e => {
+                let textBtn = btn.className.baseVal.replace("btn-", "");
+
+                this.execBtn(textBtn);
+                
+
+            });
+
+            this.addEventListenerAll(btn, 'mouseover mouseup mousedown', e => {
+
                 btn.style.cursor = "pointer";
-               });
+
+            });
+
         });
+
     }
 //para que o evento funcione com todos os botões é necessário fazer um foreach p/ q o evento percorra todos os botoes
 //o parãmetro btn acima é só um parãmetro, poderia ser qq nome, só serve para add o evento
 //lembre se que usamos uma array function acima, na array function se vc tiver um parãmetro não precisa de ()
 //se tiver mais que um parãmetro é obrigatório o uso dos ().
+
 //btn.className.baseVal.replace('btn-', ''  ->  btn.className me trás o nome da class e baseval é pq é svg, no final
 //pedi pra substituir os nomes class por nada, aí só aparece o número, só pra melhor visualização no console
 
