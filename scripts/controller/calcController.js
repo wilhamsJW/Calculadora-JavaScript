@@ -69,6 +69,8 @@ class CalcController{
         setInterval(()=>{
           this.setDisplayDateTime();
         }, 1000);
+
+        this.setLastNumberToDisplay(); 
     }
 
 
@@ -92,16 +94,18 @@ class CalcController{
 
 
 
-    clearAll() {                    //clearAll = limpar tudo, foi colocado um array vazio
-        this._operation = [];      //pq é isso q ele faz, limpa tudo ou deixa tudo vazio 
+    clearAll() {                        //clearAll = limpar tudo, foi colocado um array vazio
+        this._operation = [];          //pq é isso q ele faz, limpa tudo ou deixa tudo vazio 
+        this.setLastNumberToDisplay(); 
     }
 
-    clearEntry() {                  //clearEntry = limpar entrada, é aquele CE da calculadora
-        this._operation.pop();     //.pop = esse método limpa a última entrada 
+    clearEntry() {                        //clearEntry = limpar entrada, é aquele CE da calculadora
+        this._operation.pop();           //.pop = esse método limpa a última entrada 
+        this.setLastNumberToDisplay(); 
     }
 
     getLastOperation() {
-        return this._operation[this._operation.length-1];   //irá me retornar o último número da array menos um
+        return this._operation[this._operation.length - 1];   //irá me retornar o último número da array menos um
                                                            //este método está sendo usado no addOperation 
     }
 
@@ -132,16 +136,38 @@ class CalcController{
 
     calc() {           
         
-        let last = this._operation.pop();                        //retirando o último elemento/ pop exclui o último elemento
+        let last = '';
 
-        let result = eval(this._operation.join(""));           //método join junta todos os elementos de uma array e transforma em uma string, ele usa um separador dentro dos parâmetros
-                                                              //se dentro dos parãmetros tiver apenas aspas, ele envia tudo junto sem separador, e eu preciso tirar uma vírgula q ficará aparecendo  
-        this._operation = [result, last];  
+        if (this._operation.length > 3 ) {
+
+            last = this._operation.pop();                           //retirando o último elemento/ pop exclui o último elemento
+
+        }
+                            
+        let result = eval(this._operation.join(""));             //método join junta todos os elementos de uma array e transforma em uma string, ele usa um separador dentro dos parâmetros
+                                                                //se dentro dos parãmetros tiver apenas aspas, ele envia tudo junto sem separador, e eu preciso tirar uma vírgula q ficará aparecendo  
+                                                               //eval é quem tá fazendo os cáclculos 
+        if (last == '%' ) {
+
+             result /= 100;                                   // ou result /= 100; quando alguma coisa é igual á ela mesma e passada uma operação, eu só preciso passar o sinal de divisão pra frente e colocar o =
+             this._operation = [result];
+
+        } else {
+            
+        
+             this._operation = [result];
+             
+             if (last) this._operation.push(last);
+
+        }
+ 
         
         this.setLastNumberToDisplay();                                                     //ao usuário, o join vai tirar essa vírgula pra que os números se concatem melhor, e dessa forma eu passo pro eval calular, pq o eval calcula strings  
                                                             //A calculador tem que calcular os números de dois em dois, calcula dois e dá o resultado, se tiver um terceiro número pra calcular, ela irá calcular com o resultado            
         //console.log(this._operation);                    //dos pares calculado anteriormente ex.: 25 + 25 = 50 + 10 =  60, dessa forma. para isso criei a let last q ela irá guardar o terceiro número a ser calculado
     }
+
+
 
     setLastNumberToDisplay() {
     
@@ -149,13 +175,15 @@ class CalcController{
 
         for ( let i = this._operation.length - 1; i >= 0; i-- ) {
 
-            if(!this.isOperator(this._operation[1])) {               //o ponto exclamação funciona com uma pergunta negativa, em vez de perguntar se não, ele vai perguntar se não for
+            if(!this.isOperator(this._operation[i])) {               //o ponto exclamação funciona com uma pergunta negativa, em vez de perguntar se não, ele vai perguntar se não for
 
                 lastNumber = this._operation[i];
                 break;
             };;
 
         }
+
+        if (!lastNumber) lastNumber = 0;                            //ficará com o 0 assim q a calculadora iniciar
         console.log('lastNumber', lastNumber);
         this.displayCalc = lastNumber;
     }
@@ -202,12 +230,14 @@ class CalcController{
 
             } else {
 
+                let newValue = this.getLastOperation().toString() + value.toString();         //toString é pra transformar o número em uma string, para que a calculadora         
+                this.setLastOperation(parseInt(newValue));
+                
+                 this.setLastNumberToDisplay(); 
+
             }
 
-           let newValue = this.getLastOperation().toString() + value.toString();        //toString é pra transformar o número em uma string, para que a calculadora         
-           this.setLastOperation(parseInt(newValue));
-           
-            this.setLastNumberToDisplay();                                                  //posso concatenar um com outro. ex.: o usuário digita 2 e depois 5, a calculdora terá q formar   
+                                                                                       //posso concatenar um com outro. ex.: o usuário digita 2 e depois 5, a calculdora terá q formar   
         }                                                                             //25 e não somar 2 + 5, pra isso acontecer os números tem que ser strings ou textos   
                                                                                      //note que no parãmetro do addOperation existe um value e esse mesmo value vai ser concatenado com o  let newValue = this.getLastOperation().toString() 
                                                                                         
@@ -249,7 +279,7 @@ class CalcController{
                 break;
 
                 case 'igual':
-                 
+                 this.calc();
                 break;
 
                 case 'ponto':
