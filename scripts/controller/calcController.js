@@ -113,35 +113,81 @@ class CalcController{
 
     isOperator(value) {
 
-       return (['+',  '-',  '*',  '%',  '/'].indexOf(value) > -1);          //indexOf compara o valor recebido pelo value com os da array, e te traz essa informação, se o que o usuário digitou, ele não achou ele reornará -1
+       return (['+',  '-',  '/',  '*',  '%'].indexOf(value) > -1);          //indexOf compara o valor recebido pelo value com os da array, e te traz essa informação, se o que o usuário digitou, ele não achou ele reornará -1
                                                                            //ele faz isso com estrita perícia, com o o triplo-comparador de igualdade ou este carinha -> ===  :D        
                                                                           //pq colocou - 1? o -1 é o valor padrão que indexof retorna caso ele não encontre o que tem dentro da array, se ele encontrar 
                                                                          //ele retorna true, pq ele passa a ser maior q -1, pq todos esses sinais são maiores que -1, se ele não achar nada ele vai ser igual á -1  e retornará false 
     }                                                                   //apenas um retrun pra me retornar um valor booleano true ou false
 
 
+    pushOperation(value) {
+
+        this._operation.push(value);              //método criado responsável apenas por fazer o push ou add um valor
+                                                 //esse length > 3 foi criado para que a calculador calcule os números de dois em dois, 3 é o terceiro eleemnto a ser calculado, contando do 0 na array,
+        if (this._operation.length > 3) {        //25 + 25 = 50 + 10 = 60, note q o terceiro intem inserido pelo usuário é 10, 0 é 25, 1 é +, e 25 é 2         
+            this.calc();
+        }
+        
+    }
+
+    calc() {           
+        
+        let last = this._operation.pop();                        //retirando o último elemento/ pop exclui o último elemento
+
+        let result = eval(this._operation.join(""));           //método join junta todos os elementos de uma array e transforma em uma string, ele usa um separador dentro dos parâmetros
+                                                              //se dentro dos parãmetros tiver apenas aspas, ele envia tudo junto sem separador, e eu preciso tirar uma vírgula q ficará aparecendo  
+        this._operation = [result, last];  
+        
+        this.setLastNumberToDisplay();                                                     //ao usuário, o join vai tirar essa vírgula pra que os números se concatem melhor, e dessa forma eu passo pro eval calular, pq o eval calcula strings  
+                                                            //A calculador tem que calcular os números de dois em dois, calcula dois e dá o resultado, se tiver um terceiro número pra calcular, ela irá calcular com o resultado            
+        //console.log(this._operation);                    //dos pares calculado anteriormente ex.: 25 + 25 = 50 + 10 =  60, dessa forma. para isso criei a let last q ela irá guardar o terceiro número a ser calculado
+    }
+
+    setLastNumberToDisplay() {
+    
+        let lastNumber;
+
+        for ( let i = this._operation.length - 1; i >= 0; i-- ) {
+
+            if(!this.isOperator(this._operation[1])) {               //o ponto exclamação funciona com uma pergunta negativa, em vez de perguntar se não, ele vai perguntar se não for
+
+                lastNumber = this._operation[i];
+                break;
+            };;
+
+        }
+        console.log('lastNumber', lastNumber);
+        this.displayCalc = lastNumber;
+    }
 
 
-    addOperation(value) {               //método criado para add operações, o método push ele add 
-    console.log('A', value, isNaN(this.getLastOperation())); //uma informação dentro da array gerada, se a array tem 3 itens 
-                                      //ele add mais um item pra ficar com 4 
-                                     //isNaN = é como q fosse uma pergunta negativa, tipo: NÂO é um número? se não for um número ele retorna verdadeiro 
-                                    //ex.: a lera Z,  NÂO é um número? resposta = verdadeiro ou true, pq Z não é um número
-                                   //se for um número retorna falso, pq é um número
+   
 
-        if (isNaN(this.getLastOperation())) {          //o parãmetro de if vai receber o penúltimo número e ver do q se trata,
-                                                      //se for um número vai cair no else  
+
+
+    addOperation(value) {                                       //método criado para add operações, o método push ele add 
+    //console.log('A', value, isNaN(this.getLastOperation())); //uma informação dentro da array gerada, se a array tem 3 itens 
+                                                              //ele add mais um item pra ficar com 4 
+                                                             //isNaN = é como q fosse uma pergunta negativa, tipo: NÂO é um número? se não for um número ele retorna verdadeiro 
+                                                            //ex.: a lera Z,  NÂO é um número? resposta = verdadeiro ou true, pq Z não é um número
+                                                           //se for um número retorna falso, pq é um número
+
+        if (isNaN(this.getLastOperation())) {           //o parãmetro de if vai receber o penúltimo número e ver do q se trata,
+                                                       //se for um número vai cair no else  
 
           if (this.isOperator(value)) {
 
             this.setLastOperation(value);                                      //com este cógigo consigo substituir o último valor pego, pq ele está sendo igual a value e value tem o ultimo valor digitado pelo usuário, ou seja ele irá apenas trocar 
                                                                               //os valores quando o usuário digitar outra coisa                     
           } else if(isNaN(value)) {                                          //pq esse -1? Imagine que o usuário digitou um sinal %, então esse sinal % está sendo tratado dentro do if  
-            console.log(value);                                             //ele deixa de ser o valor atual pra ser tratado, ok? ok, então o sinal % entra aqui this._operation[this._operation.length-1]   
+            console.log('Outra Coisa',value);                                             //ele deixa de ser o valor atual pra ser tratado, ok? ok, então o sinal % entra aqui this._operation[this._operation.length-1]   
                                                                            //se o usuário digitar um +, o + será o valor atual e será o último sinal, então quando digo -1 = value, estou falando q o % agora será +, isso só serve para os sinais, não pode haver repetição de sinais,ou é mais ou é menos
                                                                         
           } else {
-              this._operation.push(value);                              //este se não está apenas mandando adicionar o operador encontrado em isOperator
+
+              this.pushOperation(value);
+
+              this.setLastNumberToDisplay();                             //este se não está apenas mandando adicionar o operador encontrado em isOperator
           }                                                          
              
           
@@ -151,17 +197,20 @@ class CalcController{
 
             if(this.isOperator(value)) {
 
-                this._operation.push(value);
+                this.pushOperation(value);
+               
 
             } else {
 
             }
 
            let newValue = this.getLastOperation().toString() + value.toString();        //toString é pra transformar o número em uma string, para que a calculadora         
-           this.setLastOperation(parseInt(newValue));                                  //posso concatenar um com outro. ex.: o usuário digita 2 e depois 5, a calculdora terá q formar   
+           this.setLastOperation(parseInt(newValue));
+           
+            this.setLastNumberToDisplay();                                                  //posso concatenar um com outro. ex.: o usuário digita 2 e depois 5, a calculdora terá q formar   
         }                                                                             //25 e não somar 2 + 5, pra isso acontecer os números tem que ser strings ou textos   
                                                                                      //note que no parãmetro do addOperation existe um value e esse mesmo value vai ser concatenado com o  let newValue = this.getLastOperation().toString() 
-           console.log(this._operation);                                                                             
+                                                                                        
     }
 
 
@@ -180,23 +229,23 @@ class CalcController{
                 break;
 
                 case 'soma':
-                    this.addOperation('+');  //chamando o método ou funçaõ para que os botões funcione.
+                this.addOperation('+');  //chamando o método ou funçaõ para que os botões funcione.
                 break;
 
                 case 'subtracao':
-                    this.addOperation('-');
+                this.addOperation('-');
                 break;
 
                 case 'divisao':
-                    this.addOperation('/')
+                this.addOperation('/')
                 break;
 
                 case 'multiplicacao':
-                    this.addOperation('*');
+                this.addOperation('*');
                 break;
 
                 case 'porcento':
-                    this.addOperation('%');
+                this.addOperation('%');
                 break;
 
                 case 'igual':
