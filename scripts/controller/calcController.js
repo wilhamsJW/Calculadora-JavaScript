@@ -299,8 +299,8 @@ class CalcController{
             } else {
 
                 let newValue = this.getLastOperation().toString() + value.toString();               //toString é pra transformar o número em uma string, para que a calculadora         
-                this.setLastOperation(parseFloat(newValue)); //acesse mozila pra entender o parsFloat.                                   
-                                                                                                  //posso concatenar um com outro. ex.: o usuário digita 2 e depois 5, a calculdora terá q formar   
+                this.setLastOperation(newValue); //acesse mozila pra entender o parsFloat.                                   
+                                                 //parsFloat retirado, deu problemas com o ponto  //posso concatenar um com outro. ex.: o usuário digita 2 e depois 5, a calculdora terá q formar   
                                                                                                  //25 e não somar 2 + 5, pra isso acontecer os números tem que ser strings ou textos   
                                                                                                 //note que no parãmetro do addOperation existe um value e esse mesmo value vai ser concatenado com o  let newValue = this.getLastOperation().toString() 
                 this.setLastNumberToDisplay(); 
@@ -322,6 +322,11 @@ class CalcController{
     addDot() {
 
         let lastOperation = this.getLastOperation();
+
+        if (typeof lastOperation === 'string' && lastOperation.split('').indexOf('.') > -1) return;   //typeof é mais uma verificação, é como q eu perguntasse, na varável lastOperation tem uma string nela? ou um texto? se sim, veja se tem
+                                                                                                     //um ponto nela, se tiver me retorna, o -1 é padrão do indexOf, se ele não achar o q pediu dentro dele na array ele retorna -1, -1 é um valor abaixo de 0 e 0 acima é a array
+                                                                                                    //o split tá fazendo a divisão do meu array com um separador vazio e o indexOf me retornará apenas um ponto, para que o usuário não digite mais de um ponto        
+
 
         if (this.isOperator(lastOperation) || !lastOperation  ) {         //esse-> || barra,barra siginifica or,ou, ou seja estou perguntando se qq uma das duas opçoes for vdd excecute o código a seguir
                                                                          // o exclamação é uma negação, tõ perguntando se não é, é uma pergunta negativa 
