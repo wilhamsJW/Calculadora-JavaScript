@@ -48,6 +48,8 @@
 class CalcController{
     constructor() {
 
+        this._lastOperator = '';
+        this._lastNumber = '';
         this._operation = [];                                          //operation está sendo utilizado como um atributo vazio em que estou usando de várias formas diferentes
         this._locale = 'pt-BR';                                       //atributo criado do idioma
         this._displayCalcEl = document.querySelector("#display");    //este El no final é apenas uma conveção pra mostrar q é um elemento html
@@ -134,20 +136,50 @@ class CalcController{
         
     }
 
+    getResult () {
+
+        //console.log('getResult', this._operation);
+        return eval(this._operation.join(""));                     //método join junta todos os elementos de uma array e transforma em uma string, ele usa um separador dentro dos parâmetros
+                                                                  //se dentro dos parãmetros tiver apenas aspas, ele envia tudo junto sem separador, e eu preciso tirar uma vírgula q ficará aparecendo  
+                                                                 //eval é quem tá fazendo os cáclculos
+
+    }
+
     calc() {           
         
         let last = '';
 
-        if (this._operation.length > 3 ) {
+        this._lastOperator = this.getLastItem();
 
-            last = this._operation.pop();                           //retirando o último elemento/ pop exclui o último elemento
+        
+
+        if (this._operation.length < 3) {                            //código do botão igual
+
+            let firstItem = this._operation[0];
+            this._operation = [firstItem, this._lastOperator, this._lastNumber];
 
         }
-                            
-        let result = eval(this._operation.join(""));             //método join junta todos os elementos de uma array e transforma em uma string, ele usa um separador dentro dos parâmetros
-                                                                //se dentro dos parãmetros tiver apenas aspas, ele envia tudo junto sem separador, e eu preciso tirar uma vírgula q ficará aparecendo  
-                                                               //eval é quem tá fazendo os cáclculos 
-        if (last == '%' ) {
+
+        if (this._operation.length > 3 ) {
+
+            last = this._operation.pop();             //retirando o último elemento/ pop exclui o último elemento
+           
+            this._lastNumber = this.getResult();
+
+        } else if (this._operation.length === 3) {
+
+            
+            this._lastNumber = this.getResult(false);
+
+        }
+
+        console.log('_lastOperator', this._lastOperator );
+        console.log('_lastNumber', this._lastNumber );
+        
+
+       let result = this.getResult(); 
+
+        if (last === '%' ) {
 
              result /= 100;                                   // ou result /= 100; quando alguma coisa é igual á ela mesma e passada uma operação, eu só preciso passar o sinal de divisão pra frente e colocar o =
              this._operation = [result];
@@ -168,23 +200,42 @@ class CalcController{
     }
 
 
+    getLastItem(isOperator = true) {                     //método criado para manipulão do botão igual
 
-    setLastNumberToDisplay() {
-    
-        let lastNumber;
+        let lastIem;
 
         for ( let i = this._operation.length - 1; i >= 0; i-- ) {
 
-            if(!this.isOperator(this._operation[i])) {               //o ponto exclamação funciona com uma pergunta negativa, em vez de perguntar se não, ele vai perguntar se não for
+            
 
-                lastNumber = this._operation[i];
+            if(this.isOperator(this._operation[i]) === isOperator ) {              
+
+                lastIem = this._operation[i];
                 break;
-            };;
+            }
+      }
 
-        }
+      if (!lastIem) {
 
-        if (!lastNumber) lastNumber = 0;                            //ficará com o 0 assim q a calculadora iniciar
+        lastIem = (isOperator) ? this._lastOperator : this._lastNumber;
+
+    }
+
+      return lastIem;
+    }
+
+
+
+    setLastNumberToDisplay() {
+    
+        let lastNumber = this.getLastItem(false);
+
+     
+
+        if (!lastNumber) lastNumber = 0;  
+                                  //ficará com o 0 assim q a calculadora iniciar
         console.log('lastNumber', lastNumber);
+
         this.displayCalc = lastNumber;
     }
 
