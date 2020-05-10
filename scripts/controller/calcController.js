@@ -96,19 +96,25 @@ class CalcController{
 
 
 
-    clearAll() {                        //clearAll = limpar tudo, foi colocado um array vazio
-        this._operation = [];          //pq é isso q ele faz, limpa tudo ou deixa tudo vazio 
+    clearAll() {   
+                                        //clearAll = limpar tudo, foi colocado um array vazio
+        this._operation = [];          //pq é isso q ele faz, limpa tudo ou deixa tudo vazio
+        this._lastNumber = '';        //coloquei aqui pq não estava zerando na tela pra o usuário  
+        this._lastOperator = '';
+        
         this.setLastNumberToDisplay(); 
     }
 
-    clearEntry() {                        //clearEntry = limpar entrada, é aquele CE da calculadora
+    clearEntry() {   
+                             //clearEntry = limpar entrada, é aquele CE da calculadora
         this._operation.pop();           //.pop = esse método limpa a última entrada 
         this.setLastNumberToDisplay(); 
     }
 
     getLastOperation() {
+
         return this._operation[this._operation.length - 1];   //irá me retornar o último número da array menos um
-                                                           //este método está sendo usado no addOperation 
+                                                             //este método está sendo usado no addOperation 
     }
 
     setLastOperation(value) {
@@ -136,6 +142,9 @@ class CalcController{
         
     }
 
+
+
+
     getResult () {
 
         //console.log('getResult', this._operation);
@@ -144,6 +153,11 @@ class CalcController{
                                                                  //eval é quem tá fazendo os cáclculos
 
     }
+
+
+
+
+
 
     calc() {           
         
@@ -198,6 +212,9 @@ class CalcController{
                                                             //A calculador tem que calcular os números de dois em dois, calcula dois e dá o resultado, se tiver um terceiro número pra calcular, ela irá calcular com o resultado            
         //console.log(this._operation);                    //dos pares calculado anteriormente ex.: 25 + 25 = 50 + 10 =  60, dessa forma. para isso criei a let last q ela irá guardar o terceiro número a ser calculado
     }
+
+
+
 
 
     getLastItem(isOperator = true) {                     //método criado para manipulão do botão igual
@@ -281,25 +298,49 @@ class CalcController{
 
             } else {
 
-                let newValue = this.getLastOperation().toString() + value.toString();         //toString é pra transformar o número em uma string, para que a calculadora         
-                this.setLastOperation(parseInt(newValue));
-                
-                 this.setLastNumberToDisplay(); 
+                let newValue = this.getLastOperation().toString() + value.toString();               //toString é pra transformar o número em uma string, para que a calculadora         
+                this.setLastOperation(parseFloat(newValue)); //acesse mozila pra entender o parsFloat.                                   
+                                                                                                  //posso concatenar um com outro. ex.: o usuário digita 2 e depois 5, a calculdora terá q formar   
+                                                                                                 //25 e não somar 2 + 5, pra isso acontecer os números tem que ser strings ou textos   
+                                                                                                //note que no parãmetro do addOperation existe um value e esse mesmo value vai ser concatenado com o  let newValue = this.getLastOperation().toString() 
+                this.setLastNumberToDisplay(); 
 
             }
 
-                                                                                       //posso concatenar um com outro. ex.: o usuário digita 2 e depois 5, a calculdora terá q formar   
-        }                                                                             //25 e não somar 2 + 5, pra isso acontecer os números tem que ser strings ou textos   
-                                                                                     //note que no parãmetro do addOperation existe um value e esse mesmo value vai ser concatenado com o  let newValue = this.getLastOperation().toString() 
-                                                                                        
+         
+         
+        }                                                                                  
     }
 
 
-    setError() {
+    setError() { 
+
         this.displayCalc = "Error";
     }
+
+
+    addDot() {
+
+        let lastOperation = this.getLastOperation();
+
+        if (this.isOperator(lastOperation) || !lastOperation  ) {         //esse-> || barra,barra siginifica or,ou, ou seja estou perguntando se qq uma das duas opçoes for vdd excecute o código a seguir
+                                                                         // o exclamação é uma negação, tõ perguntando se não é, é uma pergunta negativa 
+            this.pushOperation('0.');                                                                 
+
+        } else {
+
+            this.setLastOperation(lastOperation.toString() + '.');
+
+            
+
+        }
+
+        this.setLastNumberToDisplay();
+    }
+
     
     execBtn(value) {
+
         switch(value) {
                 case 'ac':
                 this.clearAll();
@@ -334,7 +375,7 @@ class CalcController{
                 break;
 
                 case 'ponto':
-                    this.addOperation('.')
+                    this.addDot();
                 break;
 
                 case '0':
