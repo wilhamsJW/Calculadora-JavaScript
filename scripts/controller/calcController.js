@@ -278,7 +278,7 @@ class CalcController{
         } else if (this._operation.length === 3) {
 
             
-            this._lastNumber = this.getResult(false);
+            this._lastNumber = this.getLastItem(false);
 
         }
 
