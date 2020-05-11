@@ -61,6 +61,7 @@ class CalcController{
                                                                //este _ (underline) nos atributos quer dizer que ele é privado.(leia a nota acima explicando sobre private)
         this.initialize();                                    //todos os métodos devem estar dentro do constructos pq o constructor chama eles automaticamente
         this.initButtonsEvents();
+        this.initKeyboard();
     }
 
     initialize(){
@@ -74,6 +75,62 @@ class CalcController{
 
         this.setLastNumberToDisplay(); 
     }
+
+
+    initKeyboard() {
+        
+        document.addEventListener('keyup', e => {
+
+            //console.log(e.key); //key é uma propriedade que me retorna o valor digitado no teclado, ele me informa qual tecla foi pressionada, podemos ver isso nesse console
+                                 //com este método capturamos eventos no teclado, o keyup captura a tecla q foi liberada ou qunado o usuário solta e deixa de ser pressionada   
+            switch(e.key) {
+
+                case 'Escape':
+                this.clearAll();
+                break;
+
+                case 'Backspace':
+                this.clearEntry();
+                break;
+
+                case '+':
+                case '-':
+                case '*':
+                case '/':
+                case '%':                
+                this.addOperation(e.key);  //chamando o método ou funçaõ para que os botões funcione.
+                break;
+                case 'Enter':
+                case '=':
+                    this.calc();
+                    break;   
+             
+                case '.':
+                case ',':    
+                    this.addDot();
+                break;
+
+                case '0':
+                case '1':
+                case '2':            
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                    this.addOperation(parseInt(e.key));  //o parseInt vai transformar meu texto em números, os números estão entre aspas, se estão entre
+                    break;                              //entre aspas, eles são textos... parseint converte ou o texto pra número ou número pra texto. mais especificações no site mozila 
+
+
+          }
+
+         });
+
+         this.setLastNumberToDisplay();
+
+       }
 
 
     addEventListenerAll(element, events, fn) {      //esse método ou função está interligado com o código abaixo, nele passamos 3 parãmetros que conrreposndem
