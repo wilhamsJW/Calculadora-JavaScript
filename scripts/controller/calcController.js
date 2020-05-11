@@ -62,7 +62,40 @@ class CalcController{
         this.initialize();                                    //todos os métodos devem estar dentro do constructos pq o constructor chama eles automaticamente
         this.initButtonsEvents();
         this.initKeyboard();
+        
     }
+
+
+    pasteFromClipboard() {                               //método criado pra colar um texto dentro da calculadora
+                                                        //A função parseFloat() analise um argumento string e retorne um número de ponto flutuante.   
+        document.addEventListener('paste', e =>{
+
+            let text = e.clipboardData.getData('Text');
+
+            this.displayCalc = parseFloat(text);
+
+            
+        } )
+
+    }
+
+
+    copyToClipboard() {                                   //método criado pra copiar o texto dentro da calculadora
+
+        let input = document.createElement('input');
+
+        input.value = this.displayCalc;
+
+        document.body.appendChild(input);
+
+        input.select();
+
+        document.execCommand("Copy");
+
+        //input.remove();
+
+    }
+
 
     initialize(){
 
@@ -74,6 +107,7 @@ class CalcController{
         }, 1000);
 
         this.setLastNumberToDisplay(); 
+        this.pasteFromClipboard(); //foi chamado aqui pra add este evendo no document
     }
 
 
@@ -121,7 +155,11 @@ class CalcController{
                 case '8':
                 case '9':
                     this.addOperation(parseInt(e.key));  //o parseInt vai transformar meu texto em números, os números estão entre aspas, se estão entre
-                    break;                              //entre aspas, eles são textos... parseint converte ou o texto pra número ou número pra texto. mais especificações no site mozila 
+                    break;                              //entre aspas, eles são textos... parseint converte ou o texto pra número ou número pra texto. mais especificações no site mozila
+                    
+                case 'c':
+                    if (e.ctrlkey) this.copyToClipboard();  
+                    break;  
 
 
           }
