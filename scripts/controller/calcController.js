@@ -109,11 +109,11 @@ class CalcController{
         }, 1000);
 
         this.setLastNumberToDisplay(); 
-        this.pasteFromClipboard(); //foi chamado aqui pra add este evendo no document
+        this.pasteFromClipboard(); //foi chamado aqui pra add este evendo no document da página
 
         document.querySelectorAll('.btn-ac').forEach(btn =>  {
 
-            btn.addEventListener('dbclick', e => {  //evento dbclick = clickar duas vezes. veja o mozila pra coisas mais interessantes
+            btn.addEventListener('dblclick', e => {  //evento dbclick = clickar duas vezes. veja o mozila pra coisas mais interessantes
 
                 this.toggleAudio(); //qunado de o duplo click vai aconecer o que tá dentro do método toggleAudio
     
@@ -122,6 +122,8 @@ class CalcController{
         });
 
     }
+
+ 
 
 
     toggleAudio() {
@@ -617,8 +619,17 @@ class CalcController{
     } 
 
     set displayCalc(value){
+
+        if (value.toString().length > 10) {  //o length é pra ler string, ele até leu bem os dez números, mas ultrapassou esse limite quando fiz uma multiplicação de números gigantes, então convertir o valor pra string ou texto e corrijiu o erro, no caso ele tinha permitido que números ou uma multiplicação grande passasse a exceder a tela
+            this.setError();              //pq até o momento q o suário digita número é uma string então o length entende, mas a multiplicação não era mais string, era número, então o lenth não leu
+
+            return; //este return evita q o código continue a se executar caso o usuário continue apertando as teclas, após 10 números digitados aparecerá a msg de error porém ela sumirá e 
+                    //se o usuário voltar a apertar as teclas os números continuarão a se exceder além do display da calculadora, gerando algo bem horrivel na tela, esse return impede q se passe mais de 10 números no display mostrando uma msg de error
+        }
+
         this._displayCalcEl.innerHTML = value;
     }
+    
 
     get currentDate() {
         return new Date();
