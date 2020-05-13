@@ -46,6 +46,7 @@
 
 
 class CalcController{
+
     constructor() {
 
         this._audio = new Audio('click.mp3');   //new aúdio não é algo nativo do javascript, e sim do html, mas JS entende essa classe, dá pra fazer muitas coisa com essa classe, como: aumentar volume, fazer o looping pra que a música continue tocando
@@ -69,12 +70,12 @@ class CalcController{
 
 
     pasteFromClipboard() {                               //método criado pra colar um texto dentro da calculadora
-                                                        //A função parseFloat() analise um argumento string e retorne um número de ponto flutuante.   
-        document.addEventListener('paste', e =>{
+                                                        //A função parseFloat() analise um argumento string e retorna um número de ponto flutuante. ou seja ela só permite q números sejam colados na minha calculadora  
+        document.addEventListener('paste', e =>{       //parsfloat impede q letras sejam coladas  
 
-            let text = e.clipboardData.getData('Text');
+            let t = e.clipboardData.getData('text');  //o parâmetro text é algo nativo do js, pra q ele possa colar algo, ele tem q entender q se trata de um texto q pode ser colado, sem esse parâmetro não funcionará
 
-            this.displayCalc = parseFloat(text);
+            this.displayCalc = parseFloat(t);       //a let t é só uma var q poderia ser nomeada com qq nome e chamada dentro do parsFloat
 
             
         } )
@@ -94,7 +95,7 @@ class CalcController{
 
         document.execCommand("Copy");
 
-        //input.remove();
+        input.remove();
 
     }
 
@@ -110,7 +111,7 @@ class CalcController{
 
         this.setLastNumberToDisplay(); 
         this.pasteFromClipboard(); //foi chamado aqui pra add este evendo no document da página
-
+        
         document.querySelectorAll('.btn-ac').forEach(btn =>  {
 
             btn.addEventListener('dblclick', e => {  //evento dbclick = clickar duas vezes. veja o mozila pra coisas mais interessantes
@@ -166,6 +167,7 @@ class CalcController{
         
         document.addEventListener('keyup', e => {
 
+            
             this.playAudio();
 
             //console.log(e.key); //key é uma propriedade que me retorna o valor digitado no teclado, ele me informa qual tecla foi pressionada, podemos ver isso nesse console
@@ -210,9 +212,9 @@ class CalcController{
                     this.addOperation(parseInt(e.key));  //o parseInt vai transformar meu texto em números, os números estão entre aspas, se estão entre
                     break;                              //entre aspas, eles são textos... parseint converte ou o texto pra número ou número pra texto. mais especificações no site mozila
                     
-                case 'c':
-                    if (e.ctrlkey) this.copyToClipboard();  
-                    break;  
+                    case 'c':
+                        if (e.ctrlKey) this.copyToClipboard();
+                        break; 
 
 
           }
@@ -294,12 +296,19 @@ class CalcController{
 
 
     getResult () {
-
+                                                                     //try catch = usado pra tratar erros na maioria das linguagens, geralmente usado em um escopo q já tem um execução padrão da aplicação, porém se estourar um bug eu preciso q faça algo
+        try{                                                        //aqui na calculadora, se colacassemos um 2 + e apertasse =, geraria um erro pois só teria um número pra somar, então pra não estourar um bug, algo q a aplicação não souber fazer, vai cair no catch
         //console.log('getResult', this._operation);
         return eval(this._operation.join(""));                     //método join junta todos os elementos de uma array e transforma em uma string, ele usa um separador dentro dos parâmetros
                                                                   //se dentro dos parãmetros tiver apenas aspas, ele envia tudo junto sem separador, e eu preciso tirar uma vírgula q ficará aparecendo  
                                                                  //eval é quem tá fazendo os cáclculos
-
+           } catch(e) {
+            //console.log(e); 
+             setTimeout(() => {                                //seTimeout = exibe algo após a quantidade de segundos informados, q aqui é o 1 ou 1 milisegundo, fiz isso pra mostrar o nome error no display, caso contrário só mostraria um 0 q foi o valor padrão ou inicial q a calculadora mostra
+                this.setError();
+             }, 1);
+              
+           }
     }
 
 
@@ -549,7 +558,7 @@ class CalcController{
 
                 default:
                     this.setError();               
-                    break;
+                    
 
         }
     }
