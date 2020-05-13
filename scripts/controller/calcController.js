@@ -11,7 +11,7 @@
  * Só que elas estão dentro de uma classe e aí não querem ser chamadas de funções e variáveis
  * aí passam a ser chamadas de atributos e métodos
  * 
- * Atributos =>   são variáveis dentro de uma classe, porém com mais recursoso, com um atributo vc só faz duas coisas
+ * Atributos =>   são variáveis dentro de uma classe, porém com mais recursos, com um atributo vc só faz duas coisas
  * ou armazena informação ou recupera informação. Atributos também podem possuir encapsulamento ou seja eu posso
  * controlar quem pode ou não converssar com ele
  * 
@@ -48,6 +48,8 @@
 class CalcController{
     constructor() {
 
+        this._audio = new Audio('click.mp3');   //new aúdio não é algo nativo do javascript, e sim do html, mas JS entende essa classe, dá pra fazer muitas coisa com essa classe, como: aumentar volume, fazer o looping pra que a música continue tocando
+        this._audioOnOff = false;  //de ínicio o audio dos botôes da calculadora tá desligado
         this._lastOperator = '';
         this._lastNumber = '';
         this._operation = [];                                          //operation está sendo utilizado como um atributo vazio em que estou usando de várias formas diferentes
@@ -108,12 +110,61 @@ class CalcController{
 
         this.setLastNumberToDisplay(); 
         this.pasteFromClipboard(); //foi chamado aqui pra add este evendo no document
+
+        document.querySelectorAll('.btn-ac').forEach(btn =>  {
+
+            btn.addEventListener('dbclick', e => {  //evento dbclick = clickar duas vezes. veja o mozila pra coisas mais interessantes
+
+                this.toggleAudio(); //qunado de o duplo click vai aconecer o que tá dentro do método toggleAudio
+    
+            });
+
+        });
+
+    }
+
+
+    toggleAudio() {
+//abaixo temos tres códigos executando a mesma coisa, porém de formas diferente e mais prática.
+
+        //esta é a forma mais inteligente de tratar um valor booleano ou seja um valor true ou false
+
+        this._audioOnOff = !this._audioOnOff;
+
+
+//if ternário
+
+        //this._audioOnOff = (this._audioOnOff) ? false : true;  //o interrogação pergunta o this._audioOnOff é true? e daí eu nego ele com false, os dois pontos : equivale ao se não, e em seguida a execução de false ou true
+
+        /* esta seria a maneira clássica de escrever esse código e testar a condição do botão se estivesse ligado
+        ou desligado, mas o código acima economiza algumas linhas de código com o if ternário
+
+        if (this._audioOnOff) {         //aqui eu pergunto, quando this._audioOnOff for true, execute o que tem no escopo, ou seja ele será falso
+            this._audioOnOff = false;  //execução da condicional 
+        } else {                      //aqui eu afirmo, se não , execute a segunda ordem  
+            this._audioOnOff = true; //ordem de dizer que this._audio)n)ff é true
+        }
+        */
+
+    }
+
+    playAudio() {
+
+        if (this._audioOnOff) {
+
+            this._audio.currentTime = 0;    //A propriedade currentTime define ou retorna a posição atual (em segundos) da reprodução de áudio / vídeo. //Ao definir esta propriedade, a reprodução pula para a posição especificada.
+            this._audio.play();            //o 0 inidica pra voltar pra posição inicial toda vez q for clickado, caso contrário se eu de um duplo click o audio estará no som do primeiro click enão executará o som do segundo click, pra isso precisamos meio q resetar o som pra 0 qunado houver um segundo click
+                                          //bem rápido, então o método currentime fará isso :D
+        }
+
     }
 
 
     initKeyboard() {
         
         document.addEventListener('keyup', e => {
+
+            this.playAudio();
 
             //console.log(e.key); //key é uma propriedade que me retorna o valor digitado no teclado, ele me informa qual tecla foi pressionada, podemos ver isso nesse console
                                  //com este método capturamos eventos no teclado, o keyup captura a tecla q foi liberada ou qunado o usuário solta e deixa de ser pressionada   
@@ -441,7 +492,10 @@ class CalcController{
     
     execBtn(value) {
 
+        this.playAudio();
+
         switch(value) {
+
                 case 'ac':
                 this.clearAll();
                 break;
