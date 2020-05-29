@@ -62,7 +62,7 @@ class CalcController{
                                                                  //displayCalc vai ser o display dos números onde o usuário digita, é id do html
         this._currentDate;
                                                                //este _ (underline) nos atributos quer dizer que ele é privado.(leia a nota acima explicando sobre private)
-        this.initialize();                                    //todos os métodos devem estar dentro do constructos pq o constructor chama eles automaticamente
+        this.initialize();                                    //todos os métodos devem estar dentro do constructor pq o constructor chama eles automaticamente
         this.initButtonsEvents();
         this.initKeyboard();
         
@@ -116,7 +116,7 @@ class CalcController{
 
             btn.addEventListener('dblclick', e => {  //evento dbclick = clickar duas vezes. veja o mozila pra coisas mais interessantes
 
-                this.toggleAudio(); //qunado de o duplo click vai aconecer o que tá dentro do método toggleAudio
+                this.toggleAudio(); //quando de o duplo click vai acontecer o que tá dentro do método toggleAudio
     
             });
 
@@ -279,7 +279,7 @@ class CalcController{
                                                                            //ele faz isso com estrita perícia, com o o triplo-comparador de igualdade ou este carinha -> ===  :D        
                                                                           //pq colocou - 1? o -1 é o valor padrão que indexof retorna caso ele não encontre o que tem dentro da array, se ele encontrar 
                                                                          //ele retorna true, pq ele passa a ser maior q -1, pq todos esses sinais são maiores que -1, se ele não achar nada ele vai ser igual á -1  e retornará false 
-    }                                                                   //apenas um retrun pra me retornar um valor booleano true ou false
+    }                                                                   //apenas um return pra me retornar um valor booleano true ou false
 
 
     pushOperation(value) {

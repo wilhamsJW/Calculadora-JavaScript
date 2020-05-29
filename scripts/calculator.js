@@ -8,7 +8,7 @@
  * 
  * M -> model      -> O que faz? Manipula os dados, ele que vai até o banco de dados
  * V -> view       -> O que faz? Interface que o usuário interage 
- * C -> controller -> O que faz? Determina o que vaai acontecer enquanto o usuário executa um ação
+ * C -> controller -> O que faz? Determina o que vai acontecer enquanto o usuário executa um ação
  * 
  */
 
